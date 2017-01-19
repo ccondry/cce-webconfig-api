@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+/**
+ * Reads the content of the file selected using the file input - "importFile"
+ * Logs the file content on the console and sets the file content in the "fileContent" text area.
+ */
+function readFile (files) {
+	var file = files[0];           
+	var reader = new FileReader();
+	reader.onload = function() {
+		console.log(this.result);         
+		document.getElementById("fileContent").innerHTML = this.result;   
+	}
+	reader.readAsText(file)
+}
+</script>
+</head>
+<body>
+	<div> Select a file to see the file content in the text area below.
+	<div>
+		<form>
+			<label for="importFile">Import File (.csv)</label>
+			<input type="file" id="importFile" name="importFile" onchange="readFile(this.files)" />
+		</form>
+	</div>
+	<div class="form-group">
+	  <label for="fileContent">File Content:</label>
+	  <div><textarea class="form-control" rows="10" id="fileContent" style="width:100%;height:50%"></textarea></div>
+	</div>
+</body>
+</html>

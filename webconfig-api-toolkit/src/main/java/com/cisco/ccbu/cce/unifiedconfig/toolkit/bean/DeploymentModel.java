@@ -1,0 +1,25 @@
+// ----------------------------------------------
+package com.cisco.ccbu.cce.unifiedconfig.toolkit.bean;
+
+public enum DeploymentModel {
+  LOGGERB,
+  LOGGERA,
+  NOT_INITIALIZED,
+  NON_DISTRIBUTOR,
+  GENERAL,
+  NAM,
+  VRU,
+  NAMROGGER,
+  ICMROUTERLOGGER,
+  ROUTERLOGGER8000AGENTS,
+  ROUTERLOGGER12000AGENTS,
+  CCEPACM1,
+  ICMROGGER,
+  ROGGER4000AGENTS,
+  CCEPACM1LAB,
+  HCSCC2000,
+  HCSCC500,
+  UCCE450AGENTSPROGGER,
+  HCSCC4000,
+  HCSCC12000
+}

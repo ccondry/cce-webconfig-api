@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.cisco.ccbu.unifiedconfig.toolkit</groupId>
+        <artifactId>toolkit</artifactId>
+        <version>11.5.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>webconfig-api-toolkit-samples</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.cisco.ccbu.unifiedconfig.toolkit</groupId>
+            <artifactId>webconfig-api-toolkit</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+</project>
