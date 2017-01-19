@@ -17,17 +17,17 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 
 @XmlRootElement(name="results")
 public class ImportContactList extends BaseApiBean {
-  private List<ImportContactBase> items;
+  private List<ImportContactRecord> items;
   private PageInfo pageInfo;
   private PermissionInfo permissionInfo;
 
   @XmlElementWrapper(name="importContacts")
   @XmlElement(name="importContact")
-  public List<ImportContactBase> getItems() {
+  public List<ImportContactRecord> getItems() {
      return this.items;
   }
 
-  public void setItems(List<ImportContactBase> items) {
+  public void setItems(List<ImportContactRecord> items) {
      this.items = items;
   }
 
