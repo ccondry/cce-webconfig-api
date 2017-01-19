@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 
 
-@Path("/agentteam")
+@Path("agentteam")
 @XmlRootElement(name="agentTeam")
 public class AgentTeam extends BaseApiBean {
   private Integer agentCount;
@@ -132,7 +132,7 @@ public class AgentTeam extends BaseApiBean {
   }
 
 
-  @Path("/agentteam")
+  @Path("agentteam")
   @XmlRootElement(name = "results")
   public static class AgentTeamList extends BaseApiListBean<AgentTeam> {
     @XmlElementWrapper(name = "agentTeams")
