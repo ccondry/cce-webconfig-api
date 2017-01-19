@@ -26,6 +26,11 @@ import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * A simple SSL REST Client wrapper to handle CRUD API calls to the webconfig service.
@@ -365,4 +370,58 @@ public class RESTClient {
             throw new ApiException(response.getStatus() + (status != null ? " " + status.getReasonPhrase() : ""));
         }
     }
+
+	/**
+	 * Returns an object of the passed in class type by ID.
+	 *
+	 * @param class1 type of object to get back
+	 * @param refURL relative URL to the object
+	 * @param paramMap Map of the URL parameters to include in the GET REST request
+	 * @return object of the bean type with the id
+	 */
+	public <T extends BaseApiBean> T get(Class<T> class1, String refURL, Map<String, String> paramMap) throws ApiException{
+
+		try{
+			MultivaluedMap<String, String> params = map2MultivaluedMap(paramMap);
+			return service.path(refURL).queryParams(params).accept(MediaType.APPLICATION_XML).get(class1);
+		}catch(UniformInterfaceException e){
+			handleErrors(e.getResponse());
+		}
+
+		return null;
+	}
+
+	public static Map<String, String> multivaluedMap2HashMap(MultivaluedMap<String, String> mvmap) {
+		Map<String, String> map = new HashMap<String, String>();
+		if (mvmap == null) {
+			return map;
+		}
+		for (Entry<String, List<String>> entry : mvmap.entrySet()) {
+			StringBuilder sb = new StringBuilder();
+			for (String s : entry.getValue()) {
+				if (sb.length() > 0) {
+					sb.append(',');
+				}
+				sb.append(s);
+			}
+			map.put(entry.getKey(), sb.toString());
+		}
+		return map;
+	}
+
+	public static MultivaluedMap<String, String> map2MultivaluedMap(Map<String, String> map) {
+		MultivaluedMap<String, String> mvmap = new MultivaluedMapImpl();
+		// return empty mvmap if input is null
+		if (map == null) {
+			return mvmap;
+		}
+		// iterate over the input map and stuff those strings into the mvmap
+		Iterator<String> it = map.keySet().iterator();
+		while(it.hasNext()){
+			String key = (String)it.next();
+			mvmap.add(key, (String) map.get(key));
+		}
+
+		return mvmap;
+	}
 }
