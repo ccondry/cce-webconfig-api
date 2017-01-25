@@ -4,20 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 
 import com.cisco.ccbu.cce.unifiedconfig.toolkit.ApiException;
 import com.cisco.ccbu.cce.unifiedconfig.toolkit.BaseApiBean;
+import com.cisco.ccbu.cce.unifiedconfig.toolkit.BaseApiBeanWithName;
 import com.cisco.ccbu.cce.unifiedconfig.toolkit.BaseApiListBean;
 import com.cisco.ccbu.cce.unifiedconfig.toolkit.RESTClient;
 import com.cisco.ccbu.cce.unifiedconfig.toolkit.ReferenceBean;
 import com.cisco.ccbu.cce.unifiedconfig.toolkit.bean.Agent;
-import com.cisco.ccbu.cce.unifiedconfig.toolkit.bean.AgentTeam;
-import com.cisco.ccbu.cce.unifiedconfig.toolkit.bean.Attribute;
 import com.cisco.ccbu.cce.unifiedconfig.toolkit.bean.CallType;
 import com.cisco.ccbu.cce.unifiedconfig.toolkit.bean.Campaign;
 import com.cisco.ccbu.cce.unifiedconfig.toolkit.bean.CampaignSkillGroupInfo;
@@ -26,35 +20,30 @@ import com.cisco.ccbu.cce.unifiedconfig.toolkit.bean.DialingMode;
 import com.cisco.ccbu.cce.unifiedconfig.toolkit.bean.ImportContact;
 import com.cisco.ccbu.cce.unifiedconfig.toolkit.bean.MediaRoutingDomain;
 import com.cisco.ccbu.cce.unifiedconfig.toolkit.bean.Person;
-import com.cisco.ccbu.cce.unifiedconfig.toolkit.bean.PrecisionQueue;
 import com.cisco.ccbu.cce.unifiedconfig.toolkit.bean.SkillGroup;
 import com.cisco.ccbu.cce.unifiedconfig.toolkit.bean.TimeZone;
 import com.cisco.ccbu.cce.unifiedconfig.toolkit.bean.TimeZoneRef;
-import com.sun.jersey.api.client.UniformInterfaceException;
+import com.cisco.ccbu.cce.unifiedconfig.toolkit.bean.CallType.CallTypeList;
+import com.cisco.ccbu.cce.unifiedconfig.toolkit.bean.MediaRoutingDomain.MediaRoutingDomainList;
 
 public class CceRestUtils {
 	private static final String IMPORT_PATH = "import";
 	
-	public static Agent lookupAgentById(RESTClient restClient, String q) throws RESTClientNotFoundException {
-		Agent.AgentList agents;
-		String notFoundMessage = "No Agent matched with agent ID: '";
-		try {
-			agents = restClient.getList(Agent.AgentList.class, q);
-		} catch (ApiException e) {
-			throw new RESTClientNotFoundException(notFoundMessage + q);
-		}
-		// If no Skill Group is found with the search term, return null.
-		if(agents.getItems().size() == 0) {
-			throw new RESTClientNotFoundException(notFoundMessage + q);
-		}
+	/**
+	 * @param restClient RESTClient object to connect to CCE API
+	 * @param query the agent ID to search for
+	 * @return a single Agent object if an agent is found with an agent ID exactly matching the input query string
+	 */
+	public static Agent lookupAgentById(RESTClient restClient, String query) {
+		List<Agent> agents = lookupMultiple(restClient, query, Agent.class, Agent.AgentList.class);
 
 		// Look for exact matching name and return that Skill Group
-		for(Agent agent: agents.getItems()) {
-			if(agent.getAgentId().equals(q))
+		for(Agent agent : agents) {
+			if(agent.getAgentId().equals(query))
 				return agent;
 		}
 
-		throw new RESTClientNotFoundException(notFoundMessage + q);
+		return null;
 	}
 
 	public static Person populatePersonBean(String firstName, String lastName, String userName, String password) {
@@ -77,141 +66,15 @@ public class CceRestUtils {
 	}
 
 	/**
-	 * Searches for a SkillGroup by skillGroupName
-	 * If not found, returns null
-	 * If more than one found, returns exact matching name
-	 * If exact match not found, returns the first match found
-	 *
-	 * @param restClient RestClient
-	 * @param skillGroupName Name of the SkillGroup
-	 * @return SkillGroup or null
-	 * @throws RESTClientNotFoundException 
-	 */
-	public static SkillGroup lookupSkillGroup(RESTClient restClient, String skillGroupName) throws RESTClientNotFoundException {
-		SkillGroup.SkillGroupList skillGroups = restClient.getList(SkillGroup.SkillGroupList.class, skillGroupName);
-
-		// If no Skill Group is found with the search term, return null.
-		if(skillGroups.getItems().size() == 0) {
-//			System.out.println("No SkillGroup was found with Skill Group name: " + skillGroupName);
-			throw new RESTClientNotFoundException("No SkillGroup matched the name: '" + skillGroupName);
-		}
-
-		// Look for exact matching name and return that Skill Group
-		for(SkillGroup skillGroup: skillGroups.getItems()) {
-			if(skillGroup.getName().equals(skillGroupName))
-				return skillGroup;
-		}
-
-		// If no Skill Group name matches the exact search term, then select the first skill group in the list
-		//        SkillGroup selectedSkllGroup = skillGroups.getItems().get(0);
-		//        System.out.println("No SkillGroup matched the name: '" + skillGroupName +
-		//                "'. Selecting Skill Group with name: " + selectedSkllGroup.getName());
-		//        return selectedSkllGroup;
-		throw new RESTClientNotFoundException("No SkillGroup matched the name: '" + skillGroupName);
-	}
-
-
-	public static AgentTeam lookupAgentTeam(RESTClient restClient, String teamName) throws RESTClientNotFoundException {
-		AgentTeam.AgentTeamList agentTeams;
-		try {
-			agentTeams = restClient.getList(AgentTeam.AgentTeamList.class, teamName);
-		} catch (ApiException e) {
-			throw new RESTClientNotFoundException("No AgentTeam matched the name: '" + teamName);
-		}
-		// If no Skill Group is found with the search term, return null.
-		if(agentTeams.getItems().size() == 0) {
-			throw new RESTClientNotFoundException("No AgentTeam matched the name: '" + teamName);
-		}
-
-		// Look for exact matching name and return that Skill Group
-		for(AgentTeam agentTeam: agentTeams.getItems()) {
-			if(agentTeam.getName().equals(teamName))
-				return agentTeam;
-		}
-
-		// If no Skill Group name matches the exact search term, then select the first skill group in the list
-		//        AgentTeam selectedAgentTeam = agentTeams.getItems().get(0);
-		//        System.out.println("No AgentTeam matched the name: '" + teamName +
-		//                "'. Selecting AgentTeam with name: " + selectedAgentTeam.getName());
-		//        return selectedAgentTeam;
-		throw new RESTClientNotFoundException("No AgentTeam matched the name: '" + teamName);
-	}
-	
-	public static PrecisionQueue lookupPQ(RESTClient restClient, String pqName) throws RESTClientNotFoundException {
-		PrecisionQueue.PrecisionQueueList precisionQueues;
-		try {
-			precisionQueues = restClient.getList(PrecisionQueue.PrecisionQueueList.class, pqName);
-		} catch (ApiException e) {
-			throw new RESTClientNotFoundException("No PrecisionQueue matched the name: '" + pqName);
-		}
-		// If no Precision Queue is found with the search term, throw exception
-		if(precisionQueues.getItems().size() == 0) {
-			throw new RESTClientNotFoundException("No PrecisionQueue matched the name: '" + pqName);
-		}
-
-		// Look for exact matching name and return that Precision Queue
-		for(PrecisionQueue precisionQueue: precisionQueues.getItems()) {
-			if(precisionQueue.getName().equals(pqName))
-				return precisionQueue;
-		}
-		
-		throw new RESTClientNotFoundException("No PrecisionQueue matched the name: '" + pqName);
-	}
-	
-
-	public static Attribute lookupAttribute(RESTClient restClient, String attributeName) throws RESTClientNotFoundException {
-		Attribute.AttributeList attributes;
-		try {
-			attributes = restClient.getList(Attribute.AttributeList.class, attributeName);
-		} catch (ApiException e) {
-			throw new RESTClientNotFoundException("No Attribute matched the name: '" + attributeName);
-		}
-		// If no Attribute is found with the search term, throw exception
-		if(attributes.getItems().size() == 0) {
-			throw new RESTClientNotFoundException("No Attribute matched the name: '" + attributeName);
-		}
-
-		// Look for exact matching name and return that Attribute
-		for(Attribute attribute: attributes.getItems()) {
-			if(attribute.getName().equals(attributeName))
-				return attribute;
-		}
-		
-		throw new RESTClientNotFoundException("No Attribute matched the name: '" + attributeName);
-	}
-	
-	public static DialedNumber lookupDialedNumber(RESTClient restClient, String dnString) {
-		DialedNumber.DialedNumberList dialedNumbers;
-		try {
-			dialedNumbers = restClient.getList(DialedNumber.DialedNumberList.class, dnString);
-		} catch (ApiException e) {
-			return null;
-		}
-		// If no Attribute is found with the search term, throw exception
-		if(dialedNumbers.getItems().size() == 0) {
-			return null;
-		}
-		
-		// Look for exact matching name and return that Attribute
-		for(DialedNumber dialedNumber: dialedNumbers.getItems()) {
-			if(dialedNumber.getDialedNumberString().equals(dnString))
-				return dialedNumber;
-		}
-		
-		return null;
-	}
-	
-	/**
 	 * @param restClient the CCE rest client object
 	 * @param skillgroup the skillgroup to add the agents to
 	 * @param agents 
 	 * @param useridString cxdemo lab user ID
-	 * @throws RESTClientNotFoundException if no agents are found
 	 * @throws ApiException when the API service failed to add agents to the skillgroup, 
 	 * such as if there are too many configured PQs/Skillgroups for the deployment
 	 */
 	
-	public static void addAgentsToSkillgroup(RESTClient restClient, SkillGroup skillgroup, List<Agent> agents) throws RESTClientNotFoundException, ApiException {
+	public static void addAgentsToSkillgroup(RESTClient restClient, SkillGroup skillgroup, List<Agent> agents) throws ApiException {
 		// add agents to skillgroup
 		List<ReferenceBean> agentsAdded = new ArrayList<ReferenceBean>();
 		for(Agent agent : agents) {
@@ -222,7 +85,6 @@ public class CceRestUtils {
 
 		// post or put changes to the CCE server
 		restClient.update(skillgroup);
-
 	}
 
 	public static DialedNumber createAndGetDialedNumber(RESTClient restClient, String dnString, String description, Integer routingType, String mrdName, String callTypeName) {
@@ -232,69 +94,48 @@ public class CceRestUtils {
 		dialedNumber.setDescription(description);
 		dialedNumber.setRoutingType(routingType);
 		// MRD
-		ReferenceBean mrdRef = getMrdRef(restClient, callTypeName);
+		ReferenceBean mrdRef = getReferenceBean(restClient, mrdName, MediaRoutingDomain.class, MediaRoutingDomainList.class);
 		dialedNumber.setMediaRoutingDomain(mrdRef);
 		// Call Type
-		ReferenceBean callTypeRef = getCallTypeRef(restClient, callTypeName);
+		ReferenceBean callTypeRef = getReferenceBean(restClient, callTypeName, CallType.class, CallTypeList.class);
 		dialedNumber.setCallType(callTypeRef);
 		// create dialed number
 		dialedNumber = restClient.createAndGetBean(dialedNumber);
 		return dialedNumber;
 	}
-	
-	public static ReferenceBean getMrdRef(RESTClient restClient, String mrdName) {
-		MediaRoutingDomain mrd = lookupMRD(restClient, mrdName);
-		ReferenceBean mrdRef = new ReferenceBean();
-		mrdRef.setName(mrd.getName());
-		mrdRef.setRefURL(mrd.getRefURL());
-		return mrdRef;
-	}
 
-	public static ReferenceBean getCallTypeRef(RESTClient restClient, String callTypeName) {
-		CallType callType = lookupCallType(restClient, callTypeName);
-		ReferenceBean callTypeRef = new ReferenceBean();
-		callTypeRef.setName(callType.getName());
-		callTypeRef.setRefURL(callType.getRefURL());
-		return callTypeRef;
-	}
-	
-	public static CallType lookupCallType(RESTClient restClient, String name) {
-		CallType.CallTypeList callTypes;
-		try {
-			callTypes = restClient.getList(CallType.CallTypeList.class, name);
-		} catch (ApiException e) {
-			return null;
-		}
-		// If nothing is found with the search term, throw exception
-		if(callTypes.getItems().size() == 0) {
-			return null;
-		}
+	public static <T extends BaseApiBeanWithName, L extends BaseApiListBean<T>> ReferenceBean getReferenceBean(RESTClient restClient, String name, Class<T> beanType, Class<L> beanTypeList) {
+		BaseApiBeanWithName callType = lookupSingle(restClient, name, beanType, beanTypeList);
 		
-		// Look for exact matching name and return that item
-		for(CallType item: callTypes.getItems()) {
-			if(item.getName().equals(name))
-				return item;
-		}
-		// no exact matches found
-		return null;
+		ReferenceBean refBean = new ReferenceBean();
+		refBean.setName(callType.getName());
+		refBean.setRefURL(callType.getRefURL());
+		return refBean;
 	}
+	
 
-	public static MediaRoutingDomain lookupMRD(RESTClient restClient, String name) {
-		MediaRoutingDomain.MediaRoutingDomainList list;
+
+	public static <T extends BaseApiBean, L extends BaseApiListBean<T>> List<T> lookupMultiple(RESTClient restClient, String query, Class<T> beanType, Class<L> beanListType) {
+		L list;
 		try {
-			list = restClient.getList(MediaRoutingDomain.MediaRoutingDomainList.class, name);
+			list = restClient.getList(beanListType, query);
 		} catch (ApiException e) {
 			return null;
 		}
-		// If nothing is found with the search term, throw exception
+
 		if(list.getItems().size() == 0) {
 			return null;
 		}
-		
+		return list.getItems();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T extends BaseApiBeanWithName, L extends BaseApiListBean<T>> T lookupSingle(RESTClient restClient, String query, Class<T> beanType, Class<L> beanListType) {
+		List<T> list = lookupMultiple(restClient, query, beanType, beanListType);
 		// Look for exact matching name and return that item
-		for(MediaRoutingDomain item: list.getItems()) {
-			if(item.getName().equals(name))
-				return item;
+		for(T item: ((BaseApiListBean<T>) list).getItems()) {
+			if(item.getName().equals(query))
+				return (T) item;
 		}
 		// no exact matches found
 		return null;
@@ -433,63 +274,5 @@ public class CceRestUtils {
 		//		newCampaign.setEndTime("23:59");
 		campaign.setStartDate(new Date());
 		return campaign;
-	}
-
-	/**
-	 * Searches for a Campaign by name
-	 * If exact match found, returns exact matching name
-	 * If exact match not found, returns null
-	 *
-	 * @param restClient RestClient
-	 * @param name Name of the SkillGroup
-	 * @return Campaign or null
-	 */
-	public static Campaign optCampaign(RESTClient restClient, String name) {
-		Campaign.CampaignList campaigns;
-		try {
-			campaigns = listCampaigns(restClient, name);
-		} catch (RESTClientNotFoundException e) {
-			return null;
-		}
-
-		// Look for exact matching name and return that Campaign
-		for(Campaign campaign: campaigns.getItems()) {
-			if(campaign.getName().equals(name))
-				return campaign;
-		}
-
-		return null;
-	}
-
-	/**
-	 * Searches for a Campaign by name
-	 * If exact match found, returns exact matching name
-	 * If exact match not found, throws RESTClientNotFoundException
-	 *
-	 * @param restClient RestClient
-	 * @param name Name of the SkillGroup
-	 * @return Campaign
-	 * @throws RESTClientNotFoundException 
-	 */
-	public static Campaign lookupCampaign(RESTClient restClient, String name) throws RESTClientNotFoundException {
-		Campaign.CampaignList campaigns = listCampaigns(restClient, name);
-
-		// Look for exact matching name and return that Campaign
-		for(Campaign campaign: campaigns.getItems()) {
-			if(campaign.getName().equals(name))
-				return campaign;
-		}
-
-		throw new RESTClientNotFoundException("No Campaign matched the name: '" + name);
-	}
-
-	public static Campaign.CampaignList listCampaigns(RESTClient restClient, String name) throws RESTClientNotFoundException {
-		Campaign.CampaignList campaigns = restClient.getList(Campaign.CampaignList.class, name);
-
-		// If no Campaign is found with the search term, return null.
-		if(campaigns.getItems().size() == 0) {
-			throw new RESTClientNotFoundException("No Campaigns matched the name: '" + name);
-		}
-		return campaigns;
 	}
 }

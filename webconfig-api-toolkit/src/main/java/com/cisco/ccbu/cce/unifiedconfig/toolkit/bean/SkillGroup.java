@@ -2,6 +2,8 @@
 package com.cisco.ccbu.cce.unifiedconfig.toolkit.bean;
 
 import com.cisco.ccbu.cce.unifiedconfig.toolkit.BaseApiBean;
+import com.cisco.ccbu.cce.unifiedconfig.toolkit.BaseApiBeanWithName;
+
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.ws.rs.Path;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -17,7 +19,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 
 @Path("skillgroup")
 @XmlRootElement(name="skillGroup")
-public class SkillGroup extends BaseApiBean {
+public class SkillGroup extends BaseApiBeanWithName {
   private Integer agentCount;
   private List<ReferenceBean> agents;
   private List<ReferenceBean> agentsAdded;
