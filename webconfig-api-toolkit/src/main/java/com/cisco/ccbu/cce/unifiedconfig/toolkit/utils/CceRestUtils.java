@@ -183,7 +183,7 @@ public class CceRestUtils {
 	 * @param campaignPurposeType 
 	 * @return Campaign
 	 */
-	public static Campaign createAndGetCampaign(RESTClient restClient, String campaignName, SkillGroup skillGroup, DialingMode dialingMode, String dialedNumber, Integer ivrPorts, Integer campaignPurposeType) {
+	public static Campaign createAndGetCampaign(RESTClient restClient, String campaignName, SkillGroup skillGroup, DialingMode dialingMode, String dialedNumber, Integer ivrPorts, String campaignPurposeType) {
 		List<CampaignSkillGroupInfo> skillGroupInfos = createCampaignSkillGroupInfos(Arrays.asList(skillGroup), dialedNumber, ivrPorts);
 
 		// -- Get UTC timeZone
@@ -253,7 +253,7 @@ public class CceRestUtils {
 	private static Campaign populateCampaignBean(String campaignName,
 			DialingMode dialingMode,
 			List<CampaignSkillGroupInfo> skillGroupInfos,
-			TimeZone timeZone, Integer campaignPurposeType) {
+			TimeZone timeZone, String campaignPurposeType) {
 
 		Campaign campaign = new Campaign();
 

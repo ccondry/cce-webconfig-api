@@ -24,7 +24,7 @@ public class Campaign extends BaseApiBeanWithName {
   private Float abandonPercent;
   private Integer amdTreatmentMode;
   private String campaignPrefix;
-  private Integer campaignPurposeType;
+  private String campaignPurposeType;
   private Integer changeStamp;
   private String correlationId;
   private CampaignCPAFields cpaFields;
@@ -90,11 +90,11 @@ public class Campaign extends BaseApiBeanWithName {
      this.campaignPrefix = campaignPrefix;
   }
 
-  public Integer getCampaignPurposeType() {
+  public String getCampaignPurposeType() {
      return this.campaignPurposeType;
   }
 
-  public void setCampaignPurposeType(Integer campaignPurposeType) {
+  public void setCampaignPurposeType(String campaignPurposeType) {
      this.campaignPurposeType = campaignPurposeType;
   }
 
