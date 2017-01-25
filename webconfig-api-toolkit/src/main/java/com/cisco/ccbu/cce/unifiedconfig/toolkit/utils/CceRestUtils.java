@@ -129,11 +129,10 @@ public class CceRestUtils {
 		return list.getItems();
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static <T extends BaseApiBeanWithName, L extends BaseApiListBean<T>> T lookupSingle(RESTClient restClient, String query, Class<T> beanType, Class<L> beanListType) {
 		List<T> list = lookupMultiple(restClient, query, beanType, beanListType);
 		// Look for exact matching name and return that item
-		for(T item: ((BaseApiListBean<T>) list).getItems()) {
+		for(T item: list) {
 			if(item.getName().equals(query))
 				return (T) item;
 		}
