@@ -224,8 +224,7 @@ public class CceRestUtils {
 	 * @param ivrPorts 
 	 * @return list of CampaignSkillGroupInfos
 	 */
-	private static List<CampaignSkillGroupInfo> createCampaignSkillGroupInfos(List<SkillGroup> skillGroups, String dialedNumber, Integer ivrPorts) {
-
+	public static List<CampaignSkillGroupInfo> createCampaignSkillGroupInfos(List<SkillGroup> skillGroups, String dialedNumber, Integer ivrPorts) {
 		List<CampaignSkillGroupInfo> skillGroupInfos = new ArrayList<>(skillGroups.size());
 
 		for(SkillGroup skillGroup: skillGroups) {
@@ -255,7 +254,7 @@ public class CceRestUtils {
 	 * @param campaignPurposeType 
 	 * @return Campaign bean
 	 */
-	private static Campaign populateCampaignBean(String campaignName,
+	public static Campaign populateCampaignBean(String campaignName,
 			DialingMode dialingMode,
 			List<CampaignSkillGroupInfo> skillGroupInfos,
 			TimeZone timeZone, String campaignPurposeType) {
