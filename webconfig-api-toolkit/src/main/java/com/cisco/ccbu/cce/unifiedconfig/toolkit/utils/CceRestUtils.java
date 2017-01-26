@@ -28,7 +28,7 @@ import com.cisco.ccbu.cce.unifiedconfig.toolkit.bean.MediaRoutingDomain.MediaRou
 
 public class CceRestUtils {
 	private static final String IMPORT_PATH = "import";
-	
+
 	/**
 	 * @param restClient RESTClient object to connect to CCE API
 	 * @param query the agent ID to search for
@@ -75,7 +75,7 @@ public class CceRestUtils {
 	 * @throws ApiException when the API service failed to add agents to the skillgroup, 
 	 * such as if there are too many configured PQs/Skillgroups for the deployment
 	 */
-	
+
 	public static void addAgentsToSkillgroup(RESTClient restClient, SkillGroup skillgroup, List<Agent> agents) throws ApiException {
 		// add agents to skillgroup
 		List<ReferenceBean> agentsAdded = new ArrayList<ReferenceBean>();
@@ -108,14 +108,12 @@ public class CceRestUtils {
 
 	public static <T extends BaseApiBeanWithName, L extends BaseApiListBean<T>> ReferenceBean getReferenceBean(RESTClient restClient, String name, Class<T> beanType, Class<L> beanTypeList) {
 		BaseApiBeanWithName callType = lookupSingle(restClient, name, beanType, beanTypeList);
-		
+
 		ReferenceBean refBean = new ReferenceBean();
 		refBean.setName(callType.getName());
 		refBean.setRefURL(callType.getRefURL());
 		return refBean;
 	}
-	
-
 
 	public static <T extends BaseApiBean, L extends BaseApiListBean<T>> List<T> lookupMultiple(RESTClient restClient, String query, Class<T> beanType, Class<L> beanListType) {
 		L list;
@@ -130,7 +128,7 @@ public class CceRestUtils {
 		}
 		return list.getItems();
 	}
-	
+
 	public static <T extends BaseApiBeanWithName, L extends BaseApiListBean<T>> T lookupSingle(RESTClient restClient, String query, Class<T> beanType, Class<L> beanListType) {
 		List<T> list = lookupMultiple(restClient, query, beanType, beanListType);
 		if (list == null) {
@@ -144,7 +142,7 @@ public class CceRestUtils {
 		// no exact matches found
 		return null;
 	}
-	
+
 	/**
 	 * Create and return an Import Bean
 	 *
