@@ -36,7 +36,9 @@ public class CceRestUtils {
 	 */
 	public static Agent lookupAgentById(RESTClient restClient, String query) {
 		List<Agent> agents = lookupMultiple(restClient, query, Agent.class, Agent.AgentList.class);
-
+		if (agents == null) {
+			return null;
+		}
 		// Look for exact matching name and return that Skill Group
 		for(Agent agent : agents) {
 			if(agent.getAgentId().equals(query))
@@ -131,9 +133,12 @@ public class CceRestUtils {
 	
 	public static <T extends BaseApiBeanWithName, L extends BaseApiListBean<T>> T lookupSingle(RESTClient restClient, String query, Class<T> beanType, Class<L> beanListType) {
 		List<T> list = lookupMultiple(restClient, query, beanType, beanListType);
+		if (list == null) {
+			return null;
+		}
 		// Look for exact matching name and return that item
 		for(T item: list) {
-			if(item.getName().equals(query))
+			if(item != null && item.getName().equals(query))
 				return (T) item;
 		}
 		// no exact matches found
