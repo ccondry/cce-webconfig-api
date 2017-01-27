@@ -1,1 +1,9 @@
 webconfig-api-toolkit/target
+webconfig-api-toolkit/.classpath
+webconfig-api-toolkit/.project
+webconfig-api-toolkit/.settings/org.eclipse.core.resources.prefs
+webconfig-api-toolkit/.settings/org.eclipse.m2e.core.prefs
+webconfig-api-toolkit/.settings/org.eclipse.wst.common.component
+webconfig-api-toolkit/.settings/org.eclipse.wst.common.project.facet.core.xml
+webconfig-api-toolkit/.settings/org.eclipse.wst.validation.prefs
+.classpath
